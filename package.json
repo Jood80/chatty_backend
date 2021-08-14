@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node-dev --respawn dist/index.js",
+    "build": "tsc -p index.ts ./src",
+    "start": "ts-node-dev src/index.ts",
     "tslint-check": "tslint-config-prettier-check ./tslint.json"
   },
   "repository": {
