@@ -8,6 +8,7 @@ import {
 } from 'type-graphql';
 import argon2 from 'argon2';
 import { User } from '../../entity/User';
+import { CreateUserDto } from './dto/createUserDto';
 
 @Resolver(User)
 export class RegisterResolver {
@@ -23,10 +24,8 @@ export class RegisterResolver {
 
   @Mutation(() => User)
   async register(
-    @Arg('firstName') firstName: string,
-    @Arg('lastName') lastName: string,
-    @Arg('password') password: string,
-    @Arg('email') email: string,
+    @Arg('data')
+    { firstName, lastName, password, email }: CreateUserDto,
   ): Promise<User> {
     try {
       const hashedPassword = await argon2.hash(password);
