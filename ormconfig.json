@@ -8,5 +8,5 @@
   "database": "chatty",
   "synchronize": true,
   "logging": true,
-  "entities": ["src/entity/*.*"]
+  "entities": ["dist/**/entity/*.*"]
 }
