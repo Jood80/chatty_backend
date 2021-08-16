@@ -1,5 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm";
-import { ObjectType, Field, ID, Root } from "type-graphql";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  BaseEntity,
+  OneToMany,
+} from 'typeorm';
+import { ObjectType, Field, ID, Root } from 'type-graphql';
+import { Chat } from './Chat';
 
 @ObjectType()
 @Entity('users')
@@ -17,7 +24,7 @@ export class User extends BaseEntity {
   lastName: string;
 
   @Field()
-  @Column("text", { unique: true })
+  @Column('text', { unique: true })
   email: string;
 
   @Field({ complexity: 3 })
@@ -25,6 +32,11 @@ export class User extends BaseEntity {
     return `${parent.firstName} ${parent.lastName}`;
   }
 
-  @Column({ nullable: false })  
+  @Column({ nullable: false })
   password: string;
+
+  @OneToMany(() => Chat, (chat) => chat.userID, {
+    cascade: true,
+  })
+  messages: Chat[];
 }
