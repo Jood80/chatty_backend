@@ -8,8 +8,9 @@ import { GraphQLError, GraphQLFormattedError } from 'graphql';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
 import cors from 'cors';
-import { RegisterResolver } from './modules/user/Register';
-import { LoginResolver } from './modules/user/Login';
+import { RegisterResolver } from './modules/user/resolvers/Register.resolver';
+import { LoginResolver } from './modules/user/resolvers/Login.resolver';
+import { MyProfileResolver } from './modules/user/resolvers/GetProfile.resolver';
 import { redis } from './redis';
 
 config();
@@ -18,7 +19,7 @@ const main = async () => {
   await createConnection();
 
   const schema = await buildSchema({
-    resolvers: [RegisterResolver, LoginResolver],
+    resolvers: [RegisterResolver, LoginResolver, MyProfileResolver],
     validate: true,
   });
 
@@ -30,7 +31,9 @@ const main = async () => {
       }
       return error;
     },
-    context: ({ req }: any) => ({ req }),
+    context: async ({ req }: any) => {
+      return { req };
+    },
   });
 
   const app = Express();
@@ -39,14 +42,15 @@ const main = async () => {
   app.use(cors());
   app.use(
     session({
-      store: new RedisStore({ client: redis }),
+      store: new RedisStore({ client: redis as any }),
+      name: 'qid',
       secret: process.env.SECRET!,
       resave: false,
       saveUninitialized: false,
       cookie: {
-        secure: process.env.NODE_ENV === 'production', // if true only transmit cookie over https
-        httpOnly: false, // if true prevent client side JS from reading the cookie
-        maxAge: 1000 * 60 * 10, // session max age in miliseconds
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        maxAge: 1000 * 60 * 10 * 24 * 7,
       },
     }),
   );
